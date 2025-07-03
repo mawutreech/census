@@ -1,0 +1,31 @@
+---
+title: "ss-maps"
+author: "mawutreech"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(tmap)
+library(sf)
+
+```
+
+```{r}
+ssmap = read_sf("ssd_admbnda_adm2_imwg_nbs_20180817.shp")
+counties_parties = read.csv("counties_parties.csv")
+```
+
+```{r}
+map1 = ssmap %>% 
+  rename(county = ADM2_EN, countyCode = ADM2_PCODE, state = ADM1_EN,
+         stateCode = ADM1_PCODE) 
+map2 = map1 %>% select(county, countyCode, state, stateCode, Shape_Leng, Shape_Area, geometry)
+mapdata = left_join(map2, counties_parties, by = "county")
+```
+
+```{r}
+tmap_mode("view")
+tm_shape(mapdata) + tm_polygons("Party") + tm_text("Party", size = 0.8) 
+```

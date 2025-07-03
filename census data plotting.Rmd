@@ -1,0 +1,36 @@
+---
+title: "census_data_plotting"
+author: "Mawut Reech"
+date: "2025-07-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+library(tmap)
+library(sf)
+
+
+ssmap = read_sf("ssd_admbnda_adm2_imwg_nbs_20180817.shp")
+counties_parties = read.csv("counties_parties.csv")
+
+tm_shape(ssmap) + tm_polygons()
+
+map1 = ssmap %>% 
+  rename(county = ADM2_EN, countyCode = ADM2_PCODE, state = ADM1_EN,
+         stateCode = ADM1_PCODE) 
+
+map2 = map1 %>% select(county, countyCode, state, stateCode, Shape_Leng, Shape_Area, geometry)
+
+mapdata = left_join(map2, counties_parties, by = "county")
+
+tmap_mode("view")
+tm_shape(mapdata) + tm_polygons("Party") + tm_text("Party", size = 0.8) 
+
+
+```
